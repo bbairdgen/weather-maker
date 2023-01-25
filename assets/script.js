@@ -1,8 +1,8 @@
 var APIKey = '50fb092308cca79eb778f30f3444ef23'
 var searchFormEl = document.querySelector('#search-form')
-
+var textInput = document.querySelector('.textInput')
 // weather API Specific Variables
-var city = 'London'
+var city
 var stateCode
 var countryCode
 var latEl
@@ -13,7 +13,7 @@ var lonEl
 // var queryURL = "http://api.openweathermap.org/data/2.5/weather?q=" + city + "&appid=" + APIKey
 
 function getForecast() {
-    var forecastURL = `http://api.openweathermap.org/data/2.5/forecast?lat=${latEl}&lon=${lonEl}&appid=${APIKey}&units=imperial`
+    var forecastURL = `http://api.openweathermap.org/data/2.5/forecast?lat=${latEl}&lon=${lonEl}&appid=${APIKey}&units=imperial&limit=5`
     return forecastURL
 }
 
@@ -31,6 +31,9 @@ function getCurrent() {
 function search(event) {
     event.preventDefault();
 
+    console.log(textInput.value);
+    city = textInput.value
+
     async function searchForecast() {
         const response = await fetch(getGeocode());
         const data = await response.json()
@@ -39,23 +42,66 @@ function search(event) {
         lonEl = data[0].lon
 
         const forecast = await fetch(getForecast()).then(response => response.json()).then(displayWeather(data))
-        
-        if (forecast )
         console.log(forecast);
-        // const current = await fetch(getCurrent()).then(response => response.json()).then(displayWeather(data))
+        console.log(forecast.list);
+
+
+
+        var forecastEl = document.querySelector(".forecast-column")
+        forecastEl.innerHTML = forecast.list.map((day) => {
+            for (let i=0; i < 4; i++){
+            
+            // if (i >= 4) {
+                let date = new Date(day.dt * 1000)
+                let test = date.toLocaleDateString()
+                console.log(test);
+                return `<div class="card row">
+                <div class="card-body">
+                    <h5 class="card-title">${date.toLocaleDateString()}</h5>
+                    <img src="http://openweathermap.org/img/wn/${
+                    day.weather[0].icon
+                }@4x.png" alt="${day.weather[0].description}">
+                    <p class="card-text temp" >Temp: ${day.main.temp} &deg;F</p>
+                    <p class="card-text wind">Wind: ${day.wind.speed} MPH</p>
+                    <p class="card-text humidity">Humidity: ${day.main.humidity}%</p>
+                    </div>
+                </div>`
+            }
+        }).join('');
+        console.log(forecastEl);
     }
-    // async function searchCurrent() {
-    //     const response = await fetch(getGeocode());
-    //     const data = await response.json()
-    //     console.log(data);
-    //     latEl = data[0].lat
-    //     lonEl = data[0].lon
+    
+    
+    // const current = await fetch(getCurrent()).then(response => response.json()).then(displayWeather(data))
+    
+    async function searchCurrent() {
+        const response = await fetch(getGeocode());
+        const data = await response.json()
+        console.log(data);
+        latEl = data[0].lat
+        lonEl = data[0].lon
+        const current = await fetch(getCurrent()).then(response => response.json())
+        console.log(current);
+        var currentEl = document.querySelector("#city-display")
+        let date = new Date(current.dt * 1000)
+        let test = date.toLocaleDateString()
+        console.log(test);
 
-    //     // const forecast = await fetch(getForecast()).then(response => response.json()).then(displayWeather(data))
-    //     // console.log(forecast);
-    //     const current = await fetch(getCurrent()).then(response => response.json())
-
-    // }
+        currentEl.innerHTML =  `<div class="container">
+                     <h2>${current.name} (${date.toLocaleDateString()})</h5>
+                    <i src="http://openweathermap.org/img/wn/${
+                    current.weather[0].icon
+                }@4x.png" alt="${current.weather[0].description}"></i>
+                    <p class="card-text temp" >Temp: ${current.main.temp} &deg;F</p>
+                    <p class="card-text wind">Wind: ${current.wind.speed} MPH</p>
+                    <p class="card-text humidity">Humidity: ${current.main.humidity}%</p>
+                    </div>
+                </div>`
+            };
+        // const forecast = await fetch(getForecast()).then(response => response.json()).then(displayWeather(data))
+        // console.log(forecast);
+    
+    
     return searchForecast(), searchCurrent()
 }
 
@@ -76,16 +122,6 @@ searchFormEl.addEventListener("submit", search)
 
     // Display 5-day forecast of city
     
-    // var forecastEl = document.querySelector(".forecast-column")
-    // `<div class="card">
-    //     <div class="card-body">
-    //         <h5 class="card-title">${dt.toDateSTring()}</h5>
-    //         <img src="" alt="Weather Description">
-    //             <p class="card-text temp" >Temp: ${temp}&deg;F</p>
-    //             <p class="card-text wind">Wind: ${wind} MPH</p>
-    //             <p class="card-text humidity">Humidity: ${humidity}%</p>
-    //     </div>
-    // </div>`
 
 // Save searched cities in local storage
 
