@@ -3,14 +3,13 @@ var searchFormEl = document.querySelector('#search-form')
 var textInput = document.querySelector('.textInput')
 // weather API Specific Variables
 var city
-var stateCode
-var countryCode
+
 var latEl
 var lonEl
 var cityHistory = []
+var searchTxt = ''
 
 // Search for a city by the name of the city
-// var queryURL = "http://api.openweathermap.org/data/2.5/weather?q=" + city + "&appid=" + APIKey
 
 function getForecast() {
     var forecastURL = `http://api.openweathermap.org/data/2.5/forecast?lat=${latEl}&lon=${lonEl}&appid=${APIKey}&units=imperial&limit=5`
@@ -18,7 +17,7 @@ function getForecast() {
 }
 
 function getGeocode() {
-    var geocodeURL = `http://api.openweathermap.org/geo/1.0/direct?q=${city}&appid=${APIKey}`
+    var geocodeURL = `http://api.openweathermap.org/geo/1.0/direct?q=${searchTxt}&appid=${APIKey}`
     return geocodeURL
 }
 
@@ -28,8 +27,11 @@ function getCurrent() {
 }
 
 function saveToLocalStorage() {
-    cityHistory.push(city)
     textInput.value = ''
+    if (cityHistory.includes(searchTxt)){
+        return
+    }
+    cityHistory.push(searchTxt)
     localStorage.setItem('City', JSON.stringify(cityHistory))
 }
 var historyEl = document.querySelector('#history')
@@ -39,46 +41,39 @@ function renderHistory() {
     for (var i = 0; i < cityHistory.length; i++) {
         var history = cityHistory[i]
 
-        var li = document.createElement("li")
         var btn = document.createElement("button");
         btn.textContent = history
-        btn.setAttribute("data-index", i)
+        btn.setAttribute("data-value", cityHistory[0])
+        btn.classList.add("m-1")
+        btn.classList.add("bedtime")
+        
+        historyEl.appendChild(btn)
 
-        li.appendChild(btn)
-        historyEl.appendChild(li)
     }
 }
 
+historyEl.addEventListener('click', function(event) {
+var btn = event.target
+console.log(btn.innerText);
+searchTxt = btn.innerText 
+search()
+})
+
 function init() {
     var storedHistory = JSON.parse(localStorage.getItem("City"))
-
+    
     if (storedHistory !== null) {
         cityHistory = storedHistory;
     }
     renderHistory()
 }
-console.log(localStorage.getItem('City[1]'));
-//TODO:  Turn buttons into event listeners
-historyEl.addEventListener("click", function(event) {
-    var element = event.target;
 
-    if (element.matches("button") === true) {
-    var index = element.getAttribute("data-index")
-    console.log(index.value);
-    }
-})
 
 function search(event) {
-    event.preventDefault();
+    console.log(event);
+    if (event) {
+        event.preventDefault();}
 
-    //TODO: Create if statement that will use the event listener if the textInput is empty
-    // console.log(textInput.value);
-    // if (textInput == null) {
-    //     //function
-    //     city = 
-    // } else {
-    // city = textInput.value
-    // }
     async function searchForecast() {
         const response = await fetch(getGeocode());
         const data = await response.json()
@@ -88,27 +83,27 @@ function search(event) {
 
         const forecast = await fetch(getForecast()).then(response => response.json())
         // console.log(forecast);
-        // console.log(forecast.list);
+        console.log(forecast.list);
 
         var forecastEl = document.querySelector(".forecast-column")
         forecastEl.innerHTML = forecast.list.map((day) => {
 
-            if (day.dt_txt.endsWith('12:00:00')) {
+            if (day.dt_txt.endsWith('00:00:00')) {
                 let date = new Date(day.dt * 1000)
                 let test = date.toLocaleDateString()
                 console.log(test);
-                return `<div class="card row">
-                <div class="card-body">
+                return `<div class="d-flex card m-2 border bg-drk ">
+                <div class="card-body sleep">
                 <h5 class="card-title">${date.toLocaleDateString()}</h5>
                 <img src="http://openweathermap.org/img/wn/${day.weather[0].icon
-                    }@4x.png" alt="${day.weather[0].description}">
+                    }@4x.png" alt="${day.weather[0].description}" class="icon-shrink"><br>
             <p class="card-text temp" >Temp: ${day.main.temp} &deg;F</p>
             <p class="card-text wind">Wind: ${day.wind.speed} MPH</p>
             <p class="card-text humidity">Humidity: ${day.main.humidity}%</p>
             </div>
             </div>`
             }
-            console.log(day);
+    
         }).join('');
         // console.log(forecastEl);
     }
@@ -129,14 +124,14 @@ function search(event) {
         let test = date.toLocaleDateString()
         console.log(test);
 
-        currentEl.innerHTML = `<div class="container">
-    <h2>${current.name} (${date.toLocaleDateString()})</h5>
-    <img src="http://openweathermap.org/img/wn/${current.weather[0].icon}@4x.png" alt="${current.weather[0].description}">
+        currentEl.innerHTML = `<div class="container border p-1 m-1">
+    <h2>${current.name} (${date.toLocaleDateString()}) <img src="http://openweathermap.org/img/wn/${current.weather[0].icon}@4x.png" id="current-icon" alt="${current.weather[0].description}"></h2>
     <p class="card-text temp" >Temp: ${current.main.temp} &deg;F</p>
     <p class="card-text wind">Wind: ${current.wind.speed} MPH</p>
     <p class="card-text humidity">Humidity: ${current.main.humidity}%</p>
     </div>
-    </div>`
+    </div>
+    <h3>5-Day Forecast</h3>`
     };
     // const forecast = await fetch(getForecast()).then(response => response.json()).then(displayWeather(data))
     // console.log(forecast);
@@ -153,6 +148,9 @@ function search(event) {
 // Search form event listener
 
 searchFormEl.addEventListener("submit", search)
+textInput.addEventListener("change", function() {
+    searchTxt = textInput.value
+})
 
 init()
 

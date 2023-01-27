@@ -1,0 +1,39 @@
+#dashboard {
+    background-image: linear-gradient( to right, #465ab9, darkblue);
+    color: white;
+}
+
+#current-icon {
+    max-width: 10%;
+    height: auto;
+}
+
+.icon-shrink {
+    max-width:100%;
+}
+
+.sleep {
+    background-color: #465ab9;
+    color: white;
+}
+
+.searchBtn {
+    color: darkblue;
+    border-color: darkblue;
+}
+
+.searchBtn:hover {
+    background-color: darkblue;
+    color: white;
+}
+
+.bedtime {
+    color: darkblue;
+    border-color: darkblue;
+    background-color: white;
+}
+
+.bedtime:hover {
+    background-color: darkblue;
+    color: white;
+}
