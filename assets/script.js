@@ -12,12 +12,12 @@ var searchTxt = ''
 // Search for a city by the name of the city
 
 function getForecast() {
-    var forecastURL = `http://api.openweathermap.org/data/2.5/forecast?lat=${latEl}&lon=${lonEl}&appid=${APIKey}&units=imperial&limit=5`
+    var forecastURL = `https://api.openweathermap.org/data/2.5/forecast?lat=${latEl}&lon=${lonEl}&appid=${APIKey}&units=imperial&limit=5`
     return forecastURL
 }
 
 function getGeocode() {
-    var geocodeURL = `http://api.openweathermap.org/geo/1.0/direct?q=${searchTxt}&appid=${APIKey}`
+    var geocodeURL = `https://api.openweathermap.org/geo/1.0/direct?q=${searchTxt}&appid=${APIKey}`
     return geocodeURL
 }
 
