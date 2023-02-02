@@ -95,7 +95,7 @@ function search(event) {
                 return `<div class="d-flex card m-2 border bg-drk ">
                 <div class="card-body sleep">
                 <h5 class="card-title">${date.toLocaleDateString()}</h5>
-                <img src="http://openweathermap.org/img/wn/${day.weather[0].icon
+                <img src="https://openweathermap.org/img/wn/${day.weather[0].icon
                     }@4x.png" alt="${day.weather[0].description}" class="icon-shrink"><br>
             <p class="card-text temp" >Temp: ${day.main.temp} &deg;F</p>
             <p class="card-text wind">Wind: ${day.wind.speed} MPH</p>
@@ -125,7 +125,7 @@ function search(event) {
         console.log(test);
 
         currentEl.innerHTML = `<div class="container border p-1 m-1">
-    <h2>${current.name} (${date.toLocaleDateString()}) <img src="http://openweathermap.org/img/wn/${current.weather[0].icon}@4x.png" id="current-icon" alt="${current.weather[0].description}"></h2>
+    <h2>${current.name} (${date.toLocaleDateString()}) <img src="https://openweathermap.org/img/wn/${current.weather[0].icon}@4x.png" id="current-icon" alt="${current.weather[0].description}"></h2>
     <p class="card-text temp" >Temp: ${current.main.temp} &deg;F</p>
     <p class="card-text wind">Wind: ${current.wind.speed} MPH</p>
     <p class="card-text humidity">Humidity: ${current.main.humidity}%</p>
